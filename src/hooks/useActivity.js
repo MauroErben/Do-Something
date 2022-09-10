@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { useEffect } from "react";
-import { getRandomActivity, getImageByType } from "../services/ActivityService";
+import { getRandomActivity, getImageByType, getActivityByType, getActivityByParticipants } from "../services/ActivityService";
 import ActivityContext from "../context/ActivityContext";
 import { Alert } from "react-native";
 import Toast from "react-native-root-toast";
@@ -46,6 +46,37 @@ export const useActivity = () => {
     });
   };
 
+  // Obtenemos una activity filtrada por type
+  const getActivityType = (value) => {
+    setLoading(true)
+    getActivityByType(value).then((res) => {
+      const newActivity = { ...res };
+      getImageByType(newActivity?.type).then((res) => {
+        newActivity.image = res.data[0].images.original.url;
+        setActivityDetails(newActivity);
+        setLoading(false);
+      });
+    })
+  }
+
+  // Obtenemos una activity filtrada por participants
+  const getActivityParticipants = (value) => {
+    setLoading(true)
+    getActivityByParticipants(value).then((res) => {
+      if (res.error) { // Si no hay actividades con los participantes filtrados mostramos un error
+        Alert.alert("Error", `No activities found with ${value} participants`);
+        setLoading(false)
+        return;
+      }
+      const newActivity = { ...res };
+      getImageByType(newActivity?.type).then((res) => {
+        newActivity.image = res.data[0].images.original.url;
+        setActivityDetails(newActivity);
+        setLoading(false);
+      });
+    })
+  }
+
   const refreshActivity = () => {
     getActivity();
   };
@@ -61,5 +92,7 @@ export const useActivity = () => {
     activityToMake,
     addActivityToMake,
     deleteActivityToMake,
+    getActivityType,
+    getActivityParticipants
   };
 };

@@ -4,10 +4,18 @@ import { useActivity } from "../../hooks/useActivity";
 import { StyleSheet, View, ScrollView, RefreshControl, Button, Text } from "react-native";
 import { useUser } from '../../hooks/useUser';
 import Container from '../../components/AppContainer';
+import Filter from "../../components/Home/DropDownFilter";
 
 export default function Home({ navigation }) {
   const { user } = useUser();
-  const { loading, activityDetails, refreshActivity, addActivityToMake } = useActivity();
+
+  const {
+    loading,
+    activityDetails,
+    refreshActivity,
+    addActivityToMake,
+    getActivityType,
+    getActivityParticipants } = useActivity();
 
   return (
     <Container>
@@ -21,7 +29,11 @@ export default function Home({ navigation }) {
         }
       >
         <UserInfo user={user} />
-        <Text style={styles.textInfoUpdate}>Swipe down to update activity</Text>
+        <Text style={styles.textInfoUpdate}>Filter by</Text>
+        <Filter
+          onFilterType={(selectedValue) => getActivityType(selectedValue)}
+          onFilterParticipants={(selectedValue) => getActivityParticipants(selectedValue)}
+        />
         <DetailActivity details={activityDetails} onAddActivity={() => addActivityToMake(activityDetails)} />
         <View style={styles.activitiesButtonContainer}>
           <Button title='Activities to do' onPress={() => navigation.navigate("Activities")} />
