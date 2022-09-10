@@ -13,13 +13,13 @@ const styles = StyleSheet.create({
   userInfoContainer: {
     width: '100%',
     backgroundColor: '#eee',
-    padding: 8,
+    padding: 4,
     borderRadius: 10,
     alignItems: 'center',
     marginBottom: 12,
   },
   textUserInfo: {
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: "bold",
     marginBottom: 2,
   }
