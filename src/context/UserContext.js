@@ -6,15 +6,19 @@ const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    const getStoredUser = async () => {
+  const getStoredUser = async () => {
+    try {
       const stored = await AsyncStorage.getItem("user");
       const storedUser = JSON.parse(stored);
-      if (!storedUser) {
-        return setUser(null);
+      if (storedUser) {
+        setUser(storedUser);
       }
-      setUser(storedUser);
-    };
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
     getStoredUser();
   }, []);
 

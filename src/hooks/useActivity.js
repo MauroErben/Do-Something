@@ -15,10 +15,8 @@ export const useActivity = () => {
     setActivityToMake,
   } = useContext(ActivityContext);
 
-  // Agrego una nueva actividad al estado
   const addActivityToMake = (activity) => {
-
-    const repeatActivity = activityToMake.find((item) => item.key === activity.key) // buscamos en la lista de actividades y en caso de que ya exista la actividad con el mismo id, mostramos un mensaje de que ya existe esa actividad
+    const repeatActivity = activityToMake.find((item) => item.key === activity.key)
     if (repeatActivity) {
       return Alert.alert("Error", "Activity already exists");
     }
@@ -33,48 +31,63 @@ export const useActivity = () => {
     Toast.show('Activity deleted', { duration: Toast.durations.SHORT }) //Este toast es compatible en android e ios
   };
 
+  // Obtengo una imagen segun el type de la actividad que sea
+  const getImageActivity = async (activityResponse) => {
+    const newActivity = { ...activityResponse }
+    try {
+      const response = await getImageByType(activityResponse?.type)
+      newActivity.image = response.data[0].images.original.url;
+      return newActivity;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   // Obtengo todos los detalles de la actividad
-  const getActivity = () => {
+  const getActivity = async () => {
     setLoading(true);
-    getRandomActivity().then((res) => {
-      const newActivity = { ...res }; // Realizo una copia de las actividades para poder insertarle la propiedad image al estado
-      getImageByType(newActivity?.type).then((res) => {
-        newActivity.image = res.data[0].images.original.url;
-        setActivityDetails(newActivity);
-        setLoading(false);
-      });
-    });
+    try {
+      const response = await getRandomActivity();
+      const activity = await getImageActivity(response);
+      setActivityDetails(activity);
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
   };
 
   // Obtenemos una activity filtrada por type
-  const getActivityType = (value) => {
-    setLoading(true)
-    getActivityByType(value).then((res) => {
-      const newActivity = { ...res };
-      getImageByType(newActivity?.type).then((res) => {
-        newActivity.image = res.data[0].images.original.url;
-        setActivityDetails(newActivity);
-        setLoading(false);
-      });
-    })
+  const getActivityType = async (value) => {
+    setLoading(true);
+    try {
+      const response = await getActivityByType(value);
+      const activity = await getImageActivity(response);
+      setActivityDetails(activity);
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
   }
 
   // Obtenemos una activity filtrada por participants
-  const getActivityParticipants = (value) => {
-    setLoading(true)
-    getActivityByParticipants(value).then((res) => {
-      if (res.error) { // Si no hay actividades con los participantes filtrados mostramos un error
-        Alert.alert("Error", `No activities found with ${value} participants`);
-        setLoading(false)
+  const getActivityParticipants = async (value) => {
+    setLoading(true);
+    try {
+      const response = await getActivityByParticipants(value);
+      if (response.error) {
+        Alert.alert("Error", `No activity found with ${value} participants`);
+        setLoading(false);
         return;
       }
-      const newActivity = { ...res };
-      getImageByType(newActivity?.type).then((res) => {
-        newActivity.image = res.data[0].images.original.url;
-        setActivityDetails(newActivity);
-        setLoading(false);
-      });
-    })
+      const activity = await getImageActivity(response);
+      setActivityDetails(activity);
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
   }
 
   const refreshActivity = () => {

@@ -1,6 +1,6 @@
 import SelectDropdown from "react-native-select-dropdown";
 import { View, StyleSheet } from "react-native";
-import { types, participants } from "../../utils/filterTypes";
+import { filters } from "../../utils/filterTypes";
 
 export default function Filter({ onFilterType, onFilterParticipants }) {
   return (
@@ -9,7 +9,7 @@ export default function Filter({ onFilterType, onFilterParticipants }) {
         <SelectDropdown
           defaultButtonText="Types"
           buttonStyle={styles.buttonStyle}
-          data={types.data.map((item) => item)}
+          data={filters.types.map((item) => item)}
           onSelect={onFilterType}
         />
       </View>
@@ -18,7 +18,7 @@ export default function Filter({ onFilterType, onFilterParticipants }) {
         <SelectDropdown
           defaultButtonText="Participants"
           buttonStyle={styles.buttonStyle}
-          data={participants.data.map((item) => item)}
+          data={filters.participants.map((item) => item)}
           onSelect={onFilterParticipants}
         />
       </View>

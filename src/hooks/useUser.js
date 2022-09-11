@@ -10,13 +10,17 @@ export const useUser = () => {
   const { user, setUser } = useContext(UserContext);
 
   const signUp = async (data) => {
-    await AsyncStorage.setItem("user", JSON.stringify(data)); // Almaceno el usuario en la memoria del dispositivo
-    setUser(data);
-    Alert.alert("Success", "Successfully registered")
-    navigation.reset({ // utilizo reset para que al momento de loguear se resetee la pila de navegacion y no podamos volver a la pantalla de registro
-      index: 0,
-      routes: [{ name: "Home" }]
-    });
+    try {
+      await AsyncStorage.setItem("user", JSON.stringify(data)); // Almaceno el usuario en la memoria del dispositivo
+      setUser(data);
+      Alert.alert("Success", "Successfully registered")
+      navigation.reset({ // utilizo reset para que al momento de loguear se resetee la pila de navegacion y no podamos volver a la pantalla de registro
+        index: 0,
+        routes: [{ name: "Home" }]
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const logIn = (data) => {
